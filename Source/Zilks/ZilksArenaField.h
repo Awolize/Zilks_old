@@ -38,6 +38,10 @@ public:
 	UPROPERTY(EditAnywhere, meta = (ClampMin = 1, ClampMax = 5, RebuildArenaField))
 	uint32 PathWidth;
 
+	/** Size between meshes. */
+	UPROPERTY(EditAnywhere, meta = (ClampMin = 400, ClampMax = 1000, RebuildArenaField))
+	uint32 GridSize;
+
 
 private:
 	/** Whether we need to rebuild or not. */

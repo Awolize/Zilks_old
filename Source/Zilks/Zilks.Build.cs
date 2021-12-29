@@ -8,7 +8,11 @@ public class Zilks : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" });
+
+		PublicIncludePaths.AddRange(new string[] {
+			"EnhancedInput/Public"
+		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

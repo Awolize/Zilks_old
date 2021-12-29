@@ -12,6 +12,7 @@ AZilksArenaField::AZilksArenaField()
 	PrimaryActorTick.bCanEverTick = false;
 	RoomSize = 5;
 	PathWidth = 3;
+	GridSize = 400;
 	bRebuild = true;
 
 	USceneComponent* SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
@@ -54,27 +55,25 @@ void AZilksArenaField::OnConstruction(const FTransform& Transform)
 	Bases->ClearInstances();
 
 
-
 	// Implicit floor with integer division, which makes all room sizes end up being odd.
 	int32 HalfPathWidth = PathWidth / 2;
 	int32 HalfSize = RoomSize / 2;
-	int32 GridSize = 410;
+	int32 GridSize1 = GridSize; // no idea why this is needed but doesnt work if GridSize is used on its own
 
 	FVector FloorTranslation(0.f, 0.f, 0.f);
 
 	for (int32 x = -HalfSize; x <= HalfSize; x++)
 	{
-		FloorTranslation.X = GridSize * x;
+		FloorTranslation.X = GridSize1 * x;
 
 		for (int32 y = -HalfPathWidth; y <= HalfPathWidth; y++)
 		{
-			FloorTranslation.Y = GridSize * y;
+			// Floors
+			FloorTranslation.Y = GridSize1 * y;
 			Floors->AddInstance(FTransform(FloorTranslation));
 
-			/*
-			 * Calculate where to place the Bases, should be in the middle on each short-side
-			 */
 
+			// Bases
 			FRotator Rotation(0.f, 90.f, 0.f);
 			FVector Translation = FloorTranslation;
 
