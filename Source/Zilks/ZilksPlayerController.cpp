@@ -1,13 +1,9 @@
 // Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted.
 
-
 #include "ZilksPlayerController.h"
-
 #include "InputAction.h"
 #include "InputMappingContext.h"
 #include "InputModifiers.h"
-
-
 
 /** Map key to action for mapping context with optional modifiers. */
 static void MapKey(UInputMappingContext* InputMappingContext, UInputAction* InputAction, FKey Key,
@@ -53,4 +49,11 @@ void AZilksPlayerController::SetupInputComponent()
 	MapKey(PawnMappingContext, RotateAction, EKeys::MouseX, false, true);
 	MapKey(PawnMappingContext, RotateAction, EKeys::Q, true, true, EInputAxisSwizzle::ZYX);
 	MapKey(PawnMappingContext, RotateAction, EKeys::E, false, true, EInputAxisSwizzle::ZYX);
+
+	FreeFlyAction = NewObject<UInputAction>(this);
+	MapKey(PawnMappingContext, FreeFlyAction, EKeys::F);
+
+	SpringArmLengthAction = NewObject<UInputAction>(this);
+	SpringArmLengthAction->ValueType = EInputActionValueType::Axis1D;
+	MapKey(PawnMappingContext, SpringArmLengthAction, EKeys::MouseWheelAxis);
 }
