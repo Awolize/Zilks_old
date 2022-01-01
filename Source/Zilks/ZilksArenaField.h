@@ -4,7 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ZilksEntity.h"
+#include "ZilksEntityBase.h"
+
+
 #include "ZilksArenaField.generated.h"
+
 
 UCLASS()
 class ZILKS_API AZilksArenaField : public AActor
@@ -30,20 +35,27 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UInstancedStaticMeshComponent* Floors;
 
-	/** Size of grid to use when placing meshes. */
-	UPROPERTY(EditAnywhere, meta = (ClampMin = 3, ClampMax = 25, RebuildArenaField))
-	uint32 RoomSize;
-
-	/** Size of grid to use when placing meshes. */
-	UPROPERTY(EditAnywhere, meta = (ClampMin = 1, ClampMax = 5, RebuildArenaField))
-	uint32 PathWidth;
-
-	/** Size between meshes. */
-	UPROPERTY(EditAnywhere, meta = (ClampMin = 400, ClampMax = 1000, RebuildArenaField))
-	uint32 GridSize;
-
 
 private:
 	/** Whether we need to rebuild or not. */
 	int32 bRebuild : 1;
+
+	TArray<AActor*> TileContent;
+
+	/** Size of grid to use when placing meshes. */
+	UPROPERTY(EditAnywhere, meta = (ClampMin = 3, ClampMax = 25, AllowPrivateAccess = "true", RebuildArenaField))
+	uint32 RoomSize;
+
+	/** Size of grid to use when placing meshes. */
+	UPROPERTY(EditAnywhere, meta = (ClampMin = 1, ClampMax = 5, AllowPrivateAccess = "true", RebuildArenaField))
+	uint32 PathWidth;
+
+	/** Size between meshes. */
+	UPROPERTY(EditAnywhere, meta = (ClampMin = 400, ClampMax = 1000, AllowPrivateAccess = "true", RebuildArenaField))
+	uint32 GridSize;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AZilksEntityBase> BaseActor;
+
+	void toVectorIndex();
 };

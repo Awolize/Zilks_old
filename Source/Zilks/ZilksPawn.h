@@ -108,6 +108,10 @@ public:
 	UPROPERTY(EditAnywhere)
 		float TiltResetScale;
 
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
 private:
 	/** Time to calculate Z movement from. */
 	float ZMovementTime;

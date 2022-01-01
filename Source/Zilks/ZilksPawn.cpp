@@ -1,6 +1,7 @@
 // Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted.
 
 #include "ZilksPawn.h"
+#include "Zilks.h"
 #include "ZilksPlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -51,6 +52,31 @@ AZilksPawn::AZilksPawn()
 	TiltMoveScale = 0.6f;
 	TiltRotateScale = 0.4f;
 	TiltResetScale = 0.3f;
+}
+
+// Called when the game starts or when spawned
+void AZilksPawn::BeginPlay()
+{
+	Super::BeginPlay();
+
+	bool bSpawnUnit = false;
+	if (bSpawnUnit)
+	{
+		const FVector SpawnOffset(100.f, 0.f, 1500.f);
+		const FVector SpawnLocation = GetActorTransform().TransformPosition(SpawnOffset);
+		const FTransform SpawnTransform(FQuat::Identity, SpawnLocation);
+
+		FActorSpawnParameters SpawnInfo;
+		SpawnInfo.Owner = this;
+
+		/*
+		AZilksPawn* Anvil = GetWorld()->SpawnActor<AZilksPawn>(AnvilClass, SpawnTransform, SpawnInfo);
+		if (Anvil) {
+			Anvil->BeingFalling();
+		}
+		*/
+	}
+
 }
 
 void AZilksPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
