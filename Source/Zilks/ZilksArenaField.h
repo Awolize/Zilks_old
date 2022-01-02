@@ -26,16 +26,12 @@ public:
 #endif
 
 	virtual void OnConstruction(const FTransform& Transform) override;
-
-	/** Static mesh to use for the 2 player bases. */
-	UPROPERTY(EditAnywhere)
-	class UInstancedStaticMeshComponent* Bases;
-
+	virtual void Destroyed() override;
+	
 	/** Static mesh to use for walls. */
 	UPROPERTY(EditAnywhere)
 	class UInstancedStaticMeshComponent* Floors;
-
-
+	
 private:
 	/** Whether we need to rebuild or not. */
 	int32 bRebuild : 1;
@@ -54,8 +50,7 @@ private:
 	UPROPERTY(EditAnywhere, meta = (ClampMin = 400, ClampMax = 1000, AllowPrivateAccess = "true", RebuildArenaField))
 	uint32 GridSize;
 
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
+	/** Static mesh to use for the 2 player bases. */
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true", RebuildArenaField))
 	TSubclassOf<AZilksEntityBase> BaseActor;
-
-	void toVectorIndex();
 };

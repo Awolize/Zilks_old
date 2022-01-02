@@ -8,6 +8,7 @@
 
 #include "ZilksEntityBase.h"
 #include "ZilksEntityUnit.h"
+#include "Engine/StaticMeshSocket.h"
 
 // Sets default values
 AZilksArenaField::AZilksArenaField()
@@ -23,10 +24,6 @@ AZilksArenaField::AZilksArenaField()
 
 	Floors = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Floors"));
 	Floors->SetupAttachment(SceneComponent);
-
-	Bases = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Bases"));
-	Bases->SetupAttachment(SceneComponent);
-
 }
 
 #if WITH_EDITOR
@@ -53,7 +50,6 @@ void AZilksArenaField::OnConstruction(const FTransform& Transform)
 
 
 	Floors->ClearInstances();
-	Bases->ClearInstances();
 
 	// TODO, this may change the list while iterating over it, no good!
 	TArray<AActor*> RemoveActors;
@@ -64,7 +60,7 @@ void AZilksArenaField::OnConstruction(const FTransform& Transform)
 		}
 	}
 
-	for (auto& actor : RemoveActors)
+	for (const auto& actor : RemoveActors)
 	{
 		actor->Destroy();
 	}
@@ -76,25 +72,19 @@ void AZilksArenaField::OnConstruction(const FTransform& Transform)
 
 
 	// Implicit floor with integer division, which makes all room sizes end up being odd.
-	int32 HalfPathWidth = PathWidth / 2;
-	int32 HalfSize = RoomSize / 2;
-	int32 GridSize1 = GridSize; // no idea why this is needed but doesnt work if GridSize is used on its own
-	TileContent.Init(nullptr, HalfSize * 2 + 1);
+	const int32 GridSize1 = GridSize; // no idea why this is needed but doesnt work if GridSize is used on its own
+	TileContent.Init(nullptr, RoomSize*PathWidth);
 
-	int32 FullSize = HalfSize * 2 + 1;
-	int32 FullPathWidth = HalfPathWidth * 2 + 1;
-	UE_LOG(LogZilks, Log, TEXT("FullSize (x): %d"), FullSize);
-	UE_LOG(LogZilks, Log, TEXT("FullPathWidth (y):  %d"), FullPathWidth);
+	UE_LOG(LogZilks, Log, TEXT("FullSize (x): %d"), RoomSize);
+	UE_LOG(LogZilks, Log, TEXT("FullPathWidth (y):  %d"), PathWidth);
 
 	FVector FloorTranslation(0.f, 0.f, 0.f);
 
-	// HalfSize = 9 / 2
-	//  for (int32 x = -5; x <= 5; x++)
-	for (int32 x = -HalfSize; x <= HalfSize; x++)
+	for (uint32 x = 0; x < RoomSize; x++)
 	{
 		FloorTranslation.X = GridSize1 * x;
 
-		for (int32 y = -HalfPathWidth; y <= HalfPathWidth; y++)
+		for (uint32 y = 0; y < PathWidth; y++)
 		{
 			FloorTranslation.Y = GridSize1 * y;
 
@@ -102,13 +92,14 @@ void AZilksArenaField::OnConstruction(const FTransform& Transform)
 		}
 	}
 
-	for (int32 x = -HalfSize; x <= HalfSize; x++)
+
+	for (uint32 x = 0; x < RoomSize; x++)
 	{
 		FloorTranslation.X = GridSize1 * x;
-		for (int32 y = -HalfPathWidth; y <= HalfPathWidth; y++)
+		for (uint32 y = 0; y < PathWidth; y++)
 		{
 			FloorTranslation.Y = GridSize1 * y;
-			if (y == 0 && (x == -HalfSize || x == HalfSize))
+			if (y == 0 && (x ==  0 || x == RoomSize))
 			{
 				const FRotator Rotation(0.f, 90.f, 0.f);
 
@@ -117,8 +108,11 @@ void AZilksArenaField::OnConstruction(const FTransform& Transform)
 				FActorSpawnParameters SpawnParameters;
 				SpawnParameters.Owner = this;
 				
-				uint32 ListPosition = HalfSize + x;
+				uint32 ListPosition = (x * PathWidth) + y;
 				TileContent[ListPosition] = GetWorld()->SpawnActor(BaseActor, &Location, &Rotation, SpawnParameters);
+				if (!TileContent[ListPosition]) // Could not spawn actor for some reason.
+					continue;
+				
 				TileContent[ListPosition]->SetActorLabel((x < 0) ? "ZilksEntityBase Player 1" : "ZilksEntityBase Player 2");
 				TileContent[ListPosition]->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform, NAME_None);
 				
@@ -128,6 +122,7 @@ void AZilksArenaField::OnConstruction(const FTransform& Transform)
 		}
 	}
 
+	
 	/*
 	int count = -1;
 	for (int32 x = -HalfSize; x <= HalfSize; x++)
@@ -172,4 +167,23 @@ void AZilksArenaField::OnConstruction(const FTransform& Transform)
 		}
 	}*/
 
+}
+
+void AZilksArenaField::Destroyed()
+{
+	Super::Destroyed();
+
+	// TODO, this may change the list while iterating over it, no good!
+	TArray<AActor*> RemoveActors;
+	for (AActor* BaseToRemove : this->Children) {
+		if (Cast<AZilksEntityBase>(BaseToRemove)) {
+			UE_LOG(LogZilks, Log, TEXT("AZilksArenaField::OnConstruction - Destroy Actor"));
+			RemoveActors.Add(BaseToRemove);
+		}
+	}
+	for (AActor* const& actor : RemoveActors)
+	{
+		actor->Destroy();
+	}
+	// -----  https://answers.unrealengine.com/questions/143888/how-do-i-remove-items-from-a-tarray-while-iteratin.html ---- ^ might help
 }

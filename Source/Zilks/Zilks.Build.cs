@@ -10,9 +10,9 @@ public class Zilks : ModuleRules
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" });
 
-		PublicIncludePaths.AddRange(new string[] {
-			"EnhancedInput/Public"
-		});
+		// PublicIncludePaths.AddRange(new string[] {
+		// 	"EnhancedInput/Public"
+		// });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
